@@ -10,6 +10,8 @@ namespace IntelHexFormatReader
     {
         private const string COLON = ":";
 
+        private const int LINESIZEMIN = 11;
+
         /// <summary>
         /// Parse a line in an Intel Hex file.
         /// 
@@ -27,17 +29,24 @@ namespace IntelHexFormatReader
         /// <returns></returns>
         public static IntelHexRecord ParseLine(string line)
         {
-            if (line == null) throw new IOException("Line to parse can not be null");
+            //if (line == null) throw new IOException("Line to parse can not be null");
+            
+            //// At a minimum, a record should consist of start code (1 char), byte count (2 chars), adress (4 chars), 
+            //// record type (2 chars), checksum (2 chars) - only the data part can potentially be empty. This means 
+            //// the line should contain at least 11 characters, or should be deemed too short.
+            //if (line.Length < 11) throw new IOException(string.Format("Line '{0}' is too short!", line));
 
-            // At a minimum, a record should consist of start code (1 char), byte count (2 chars), adress (4 chars), 
-            // record type (2 chars), checksum (2 chars) - only the data part can potentially be empty. This means 
-            // the line should contain at least 11 characters, or should be deemed too short.
-            if (line.Length < 11) throw new IOException(string.Format("Line '{0}' is too short!", line));
+            //// First character should be a colon.
+            //if (!line.StartsWith(COLON))
+            //    throw new IOException(
+            //        string.Format("Illegal line start character ('{0}'!", line));
 
-            // First character should be a colon.
-            if (!line.StartsWith(COLON))
-                throw new IOException(
-                    string.Format("Illegal line start character ('{0}'!", line));
+            if (string.IsNullOrEmpty(line)
+                || line.Length < LINESIZEMIN
+                || !line.StartsWith(COLON))
+            {
+                return null;
+            }
 
             // Parse byteCount, and then calculate and verify required record length
             var byteCount = TryParseByteCount(line.Substring(1, 2));

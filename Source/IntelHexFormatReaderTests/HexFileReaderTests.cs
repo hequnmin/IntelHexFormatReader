@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
 using IntelHexFormatReader;
+using IntelHexFormatReader.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace IntelHexFormatReaderTests
@@ -120,5 +122,15 @@ namespace IntelHexFormatReaderTests
         }
 
         // TODO: add tests for Start Segment Address, Start Linear Address, Start Segment Address, Extended Segment Address
+
+        [TestMethod]
+        public void HexFileReaderHexFileLoad()
+        {
+            HexFileReader reader = new HexFileReader(@"c:\xx.hex");
+            MemoryBlock block = reader.Parse();
+            byte[] cells = block.Cells.Select(c => c.Value).ToArray();
+            string data = BitConverter.ToString(cells).Replace('-',' ');
+            Console.Write(data);
+        }
     }
 }
